@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database'; // Pastikan nama variabel sesuai dengan file
+import sequelize from '../config/database';
 
 class User extends Model {
   public id!: string;
@@ -9,6 +9,7 @@ class User extends Model {
   public date_of_birth?: Date;
   public gender?: string;
 }
+
 
 User.init(
   {
