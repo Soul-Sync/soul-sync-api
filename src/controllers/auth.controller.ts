@@ -22,16 +22,17 @@ export const register = async (req: Request, res: Response): Promise<Response> =
     try {
         const userExists = await User.findOne({ where: { email } });
         if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'User already exists', status: 'error' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({ name, email, password: hashedPassword });
 
         return res.status(201).json({
-            message: 'User created successfully'
+            message: 'User created successfully',
+            status: 'success',
         });
-        
+
     } catch (error) {
         return handleServerError(res, error);
     }
@@ -44,19 +45,22 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
         const user = await User.findOne({ where: { email } });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(400).json({ message: 'Invalid email or password', status: 'error' });
         }
 
         const token = generateToken({ id: user.id, email: user.email });
         return res.status(200).json({
             message: 'Login successful',
-            token : token,
-            user: {
-                ...user.get({ plain: true }),
-                password: undefined,
+            status: 'success',
+            payload: {
+                token: token,
+                user: {
+                    ...user.get({ plain: true }),
+                    password: undefined,
+                }
             }
         });
-        
+
     } catch (error) {
         return handleServerError(res, error);
     }
