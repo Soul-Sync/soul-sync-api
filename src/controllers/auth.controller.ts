@@ -54,6 +54,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
             status: 'success',
             payload: {
                 token: token,
+                token_type: 'Bearer',
                 user: {
                     ...user.get({ plain: true }),
                     password: undefined,
