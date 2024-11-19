@@ -1,11 +1,11 @@
 import Joi from 'joi';
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model';
 import { generateToken } from '../utils/jwt.util';
 import { handleServerError } from '../utils/error.util';
 
-export const register = async (req: Request, res: Response): Promise<Response> => {
+export const register: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const validationSchema = Joi.object({
         name: Joi.string().required(),
         email: Joi.string().email().required(),
@@ -14,7 +14,8 @@ export const register = async (req: Request, res: Response): Promise<Response> =
 
     const { error } = validationSchema.validate(req.body);
     if (error) {
-        return res.status(400).json({ message: error.message });
+        res.status(400).json({ message: error.message });
+        return;  // Ensure the function exits after sending a response
     }
 
     const { name, email, password } = req.body;
@@ -22,34 +23,36 @@ export const register = async (req: Request, res: Response): Promise<Response> =
     try {
         const userExists = await User.findOne({ where: { email } });
         if (userExists) {
-            return res.status(400).json({ message: 'User already exists', status: 'error' });
+            res.status(400).json({ message: 'User already exists', status: 'error' });
+            return;
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({ name, email, password: hashedPassword });
 
-        return res.status(201).json({
+        res.status(201).json({
             message: 'User created successfully',
             status: 'success',
         });
 
     } catch (error) {
-        return handleServerError(res, error);
+        handleServerError(res, error as Error);
     }
 };
 
-export const login = async (req: Request, res: Response): Promise<Response> => {
+export const login: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ where: { email } });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(400).json({ message: 'Invalid email or password', status: 'error' });
+            res.status(400).json({ message: 'Invalid email or password', status: 'error' });
+            return;  // Ensure the function exits after sending a response
         }
 
         const token = generateToken({ id: user.id, email: user.email });
-        return res.status(200).json({
+        res.status(200).json({
             message: 'Login successful',
             status: 'success',
             payload: {
@@ -63,6 +66,6 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
         });
 
     } catch (error) {
-        return handleServerError(res, error);
+        handleServerError(res, error as Error);
     }
 };

@@ -3,7 +3,6 @@ dotenv.config();
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import cors from 'cors';
 import connection from './config/database';
 import authRoutes from './routes/auth.route';
 
@@ -32,7 +31,6 @@ const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 const app = express();
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors())
 
 app.use(globalRateLimiter(15 * 60 * 1000, 100));
 
