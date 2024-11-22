@@ -1,38 +1,38 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
-class DetailKuesioner extends Model {
+class Questionnaire extends Model {
   id!: string;
-  kuesioner_id!: string;
-  question_id!: string;
-  answer!: string;
+  user_id!: string;
+  date!: Date;
+  status!: string;
 }
 
-DetailKuesioner.init(
+Questionnaire.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    kuesioner_id: {
+    user_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    question_id: {
-      type: DataTypes.UUID,
+    date: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
-    answer: {
+    status: {
       type: DataTypes.STRING,
       allowNull: false,
     },
   },
   {
     sequelize,
-    modelName: 'DetailKuesioner',
-    tableName: 'detail_kuesioners',
+    modelName: 'Questionnaire',
+    tableName: 'questionnaires',
   }
 );
 
-export default DetailKuesioner;
+export default Questionnaire;

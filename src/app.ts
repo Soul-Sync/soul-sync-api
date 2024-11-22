@@ -10,6 +10,7 @@ import statusMonitor from 'express-status-monitor';
 import {sequelize} from './models';
 import authRoutes from './routes/auth.route';
 import articleRoutes from './routes/article.route';
+import questionRoutes from './routes/question.route';
 
 // Rate limiter middleware
 import { globalRateLimiter } from './middlewares/rate-limiter.middleware';
@@ -56,6 +57,7 @@ app.get('/', (req, res) => {
 app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerSpecs))
 app.use('/auth', authRoutes);
 app.use('/articles', authenticate, articleRoutes);
+app.use('/question', authenticate, questionRoutes);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

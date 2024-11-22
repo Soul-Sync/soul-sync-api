@@ -1,37 +1,37 @@
 import sequelize from '../config/database';
-import Kuesioner from './kuesioner.model';
+import Questionnaire from './questionnaire.model';
 import User from './user.model';
 import MusicRecomendation from './music.recomendation.model';
 import TeraphyRecomendation from './therapy.recomendation.model';
 import Teraphy from './therapy.model';
 import Music from './music.model';
-import DetailKuesioner from './detail.kuesioner.model';
+import DetailQuestionnaire from './detail.questionnaire.model';
 import Question from './question.mode';
 
 
-Kuesioner.belongsTo(User, {
+Questionnaire.belongsTo(User, {
   foreignKey: 'user_id',
   as: 'user',
 });
 
-Kuesioner.hasMany(DetailKuesioner, {
-  foreignKey: 'kuesioner_id',
-  as: 'detail_kuesioner',
+Questionnaire.hasMany(DetailQuestionnaire, {
+  foreignKey: 'questionnaire_id',
+  as: 'detail_questionnaire',
 });
 
-Kuesioner.hasOne(MusicRecomendation, {
-  foreignKey: 'kuesioner_id',
+Questionnaire.hasOne(MusicRecomendation, {
+  foreignKey: 'questionnaire_id',
   as: 'music_recomendation',
 });
 
-Kuesioner.hasOne(TeraphyRecomendation, {
-  foreignKey: 'kuesioner_id',
+Questionnaire.hasOne(TeraphyRecomendation, {
+  foreignKey: 'questionnaire_id',
   as: 'teraphy_recomendation',
 });
 
-Question.hasMany(DetailKuesioner, {
+Question.hasMany(DetailQuestionnaire, {
   foreignKey: 'question_id',
-  as: 'detail_kuesioner',
+  as: 'detail_questionnaire',
 });
 
 Music.hasMany(MusicRecomendation, {
@@ -47,8 +47,8 @@ Teraphy.hasMany(TeraphyRecomendation, {
 export {
   sequelize,
   User,
-  Kuesioner,
-  DetailKuesioner,
+  Questionnaire,
+  DetailQuestionnaire,
   Question,
   Music,
   Teraphy,

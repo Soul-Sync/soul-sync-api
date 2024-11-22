@@ -33,6 +33,7 @@ export const index: RequestHandler = async (req: Request, res: Response): Promis
     } catch {
         handleServerError(res, 'Server error');
     }
+    
 };
 
 export const show: RequestHandler = async (req: Request, res: Response): Promise<void> => {
@@ -47,7 +48,6 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
                 message: 'Article not found',
                 payload: null
             });
-            return;
         }
 
         res.status(200).json({
