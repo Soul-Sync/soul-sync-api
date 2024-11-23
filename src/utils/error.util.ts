@@ -5,7 +5,10 @@ import { Response } from "express";
  * @param res - Express Response object
  * @param message - Error message to send in the response
  */
-export const handleServerError = (res: Response, message: string): void => {
-    res.status(500).json({ message, status: "error" });
+export const handleServerError = (res: Response, message: Error | string): void => {
+    res.status(500).json({ 
+        status: 'error',
+        message: message instanceof Error ? message.message : message,
+    });
     // Optionally, you can log the error or take further actions here.
 };

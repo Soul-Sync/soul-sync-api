@@ -2,6 +2,7 @@ import { Request, Response, RequestHandler } from 'express';
 import { handleServerError } from '../utils/error.util';
 import { DetailQuestionnaire, Music, MusicRecommendation, Questionnaire, Theraphy, TheraphyRecommendation, sequelize } from '../models';
 import { Op, Sequelize } from 'sequelize';
+import { fetchQuestionnaireWithRelations } from '../utils/questionnaire.util';
 
 export const index: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -50,38 +51,7 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
     const { id } = req.params;
 
     try {
-        const questionnaire = await Questionnaire.findOne({
-            where: {
-                id
-            },
-            include: [
-                {
-                    model: MusicRecommendation,
-                    as: 'music_recommendation',
-                    attributes: ['music_id'],
-                    include: [
-                        {
-                            model: Music,
-                            as: 'music',
-                            attributes: ['id', 'title', 'artist', 'thumbnail', 'link']
-                        }
-                    ]
-                },
-                {
-                    model: TheraphyRecommendation,
-                    as: 'theraphy_recommendation',
-                    attributes: ['therapy_id'],
-                    include: [
-                        {
-                            model: Theraphy,
-                            as: 'therapy',
-                            attributes: ['id', 'name']
-                        }
-                    ]
-                }
-            ]
-        });
-
+        const questionnaire = await fetchQuestionnaireWithRelations(id);
         if (!questionnaire) {
             res.status(404).json({
                 status: 'error',
@@ -99,7 +69,7 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
             music_recommendation: questionnaire.music_recommendation?.map(({ music }) => music) || [],
             theraphy_recommendation: questionnaire.theraphy_recommendation?.map(({ therapy }) => therapy) || []
         };
-        
+
         res.status(200).json({
             status: 'success',
             message: 'Questionnaire successfully retrieved',
@@ -108,17 +78,37 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
             }
         });
     }
-    catch (error) {
+    catch {
         handleServerError(res, 'Server error');
     }
 };
 
 export const store: RequestHandler = async (req, res) => {
-    const transaction = await sequelize.transaction(); // Start a transaction
+    const transaction = await sequelize.transaction();
 
     try {
-        const { question } = req.body;
+        const { answer } = req.body;
         const user_id = req.user?.id;
+
+        // check if the user has filled out the questionnaire today
+        const checkQuestionnaire = await Questionnaire.findOne({
+            where: {
+                user_id,
+                date: {
+                    [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)),
+                    [Op.lt]: new Date(new Date().setHours(23, 59, 59, 999))
+                }
+            }
+        });
+
+        if (checkQuestionnaire) {
+            res.status(400).json({
+                status: 'error',
+                message: 'You have already filled out the questionnaire today',
+                payload: null
+            });
+            return;
+        }
 
         // Store the questionnaire
         const questionnaire = await Questionnaire.create(
@@ -131,13 +121,13 @@ export const store: RequestHandler = async (req, res) => {
         );
 
         // Store the answers
-        if (question.length > 0) {
-            for (const q of question) {
+        if (answer.length > 0) {
+            for (const a of answer) {
                 await DetailQuestionnaire.create(
                     {
                         questionnaire_id: questionnaire.id,
-                        question_id: q.id,
-                        answer: q.answer
+                        question_id: a.id,
+                        answer: a.option
                     },
                     { transaction }
                 );
@@ -152,21 +142,49 @@ export const store: RequestHandler = async (req, res) => {
         }
 
         // Store the Music Recommendation & Theraphy Recommendation
+        const music_recommendation = await Music.findAll({
+            order: Sequelize.literal('rand()'),
+            limit: 5
+        });
 
+        const theraphy_recommendation = await Theraphy.findAll({
+            order: Sequelize.literal('rand()'),
+            limit: 5
+        });
+
+        const storeMusicRecommendation = MusicRecommendation.bulkCreate(
+            music_recommendation.map(({ id }) => ({
+                questionnaire_id: questionnaire.id,
+                music_id: id
+            })),
+            { transaction }
+        );
+
+        const storeTheraphyRecommendation = TheraphyRecommendation.bulkCreate(
+            theraphy_recommendation.map(({ id }) => ({
+                questionnaire_id: questionnaire.id,
+                therapy_id: id
+            })),
+            { transaction }
+        );
+
+        await Promise.all([storeMusicRecommendation, storeTheraphyRecommendation]);
 
         await transaction.commit();
+
+        const questionnaireData = await fetchQuestionnaireWithRelations(questionnaire.id);
 
         res.status(201).json({
             status: 'success',
             message: 'Questionnaire successfully created',
             payload: {
-                questionnaire
+                questionnaire: questionnaireData
             }
         });
         return;
 
     } catch (error) {
         await transaction.rollback();
-        handleServerError(res, 'Server error');
+        handleServerError(res, error as Error);
     }
 };
