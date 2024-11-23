@@ -1,8 +1,9 @@
 import { Request, Response, RequestHandler } from 'express';
-import { handleServerError } from '../utils/error.util';
+import { handleResponse, handleServerError, handleSuccess } from '../utils/response.util';
 import { DetailQuestionnaire, Music, MusicRecommendation, Questionnaire, Theraphy, TheraphyRecommendation, sequelize } from '../models';
 import { Op, Sequelize } from 'sequelize';
 import { fetchQuestionnaireWithRelations } from '../utils/questionnaire.util';
+import { HttpStatusCode } from '../enum/httpStatusCode';
 
 export const index: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -24,26 +25,10 @@ export const index: RequestHandler = async (req: Request, res: Response): Promis
             limit: 10
         });
 
-        if (questionnaire.length === 0) {
-            res.status(404).json({
-                status: 'error',
-                message: 'Questionnaire not found',
-                payload: null
-            });
-            return;
-        }
+        handleSuccess(res, 'Questionnaire successfully retrieved', questionnaire);
 
-        res.status(200).json({
-            status: 'success',
-            message: 'Questionnaire successfully retrieved',
-            payload: {
-                questionnaire
-            }
-        });
-        return;
-
-    } catch {
-        handleServerError(res, 'Server error');
+    } catch (error) {
+        handleServerError(res, error as Error);
     }
 }
 
@@ -53,10 +38,9 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
     try {
         const questionnaire = await fetchQuestionnaireWithRelations(id);
         if (!questionnaire) {
-            res.status(404).json({
+            handleResponse(res, HttpStatusCode.NOT_FOUND, {
                 status: 'error',
                 message: 'Questionnaire not found',
-                payload: null
             });
             return;
         }
@@ -70,16 +54,12 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
             theraphy_recommendation: questionnaire.theraphy_recommendation?.map(({ therapy }) => therapy) || []
         };
 
-        res.status(200).json({
-            status: 'success',
-            message: 'Questionnaire successfully retrieved',
-            payload: {
-                questionnaire: formattedQuestionnaire
-            }
+        handleSuccess(res, 'Questionnaire successfully retrieved', {
+            questionnaire: formattedQuestionnaire
         });
     }
-    catch {
-        handleServerError(res, 'Server error');
+    catch (error) {
+        handleServerError(res, error as Error);
     }
 };
 
@@ -102,10 +82,9 @@ export const store: RequestHandler = async (req, res) => {
         });
 
         if (checkQuestionnaire) {
-            res.status(400).json({
+            handleResponse(res, HttpStatusCode.BAD_REQUEST, {
                 status: 'error',
                 message: 'You have already filled out the questionnaire today',
-                payload: null
             });
             return;
         }
@@ -133,10 +112,9 @@ export const store: RequestHandler = async (req, res) => {
                 );
             }
         } else {
-            res.status(404).json({
+            handleResponse(res, HttpStatusCode.BAD_REQUEST, {
                 status: 'error',
                 message: 'Please answer all question',
-                payload: null
             });
             return;
         }
@@ -174,14 +152,9 @@ export const store: RequestHandler = async (req, res) => {
 
         const questionnaireData = await fetchQuestionnaireWithRelations(questionnaire.id);
 
-        res.status(201).json({
-            status: 'success',
-            message: 'Questionnaire successfully created',
-            payload: {
-                questionnaire: questionnaireData
-            }
-        });
-        return;
+        handleSuccess(res, 'Questionnaire successfully created', {
+            questionnaire: questionnaireData
+        }, HttpStatusCode.CREATED);
 
     } catch (error) {
         await transaction.rollback();

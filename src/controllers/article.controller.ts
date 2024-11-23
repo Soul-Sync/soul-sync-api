@@ -1,7 +1,8 @@
 import { Request, Response, RequestHandler } from 'express';
-import { handleServerError } from '../utils/error.util';
+import { handleResponse, handleServerError, handleSuccess } from '../utils/response.util';
 import Article from '../models/article.model';
 import { Op, Sequelize } from 'sequelize';
+import { HttpStatusCode } from '../enum/httpStatusCode';
 
 export const index: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { search } = req.query;
@@ -20,18 +21,12 @@ export const index: RequestHandler = async (req: Request, res: Response): Promis
             order: Sequelize.literal('RAND()'),
         });
 
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Article successfully retrieved',
-            payload: {
-                article
-            }
+        handleSuccess(res, 'Article successfully retrieved', {
+            article: article
         });
-        return;
         
-    } catch {
-        handleServerError(res, 'Server error');
+    } catch (error) {
+        handleServerError(res, error as Error);
     }
     
 };
@@ -42,22 +37,10 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
     try {
         const article = await Article.findByPk(id);
 
-        if (!article) {
-            res.status(404).json({
-                status: 'error',
-                message: 'Article not found',
-                payload: null
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Article successfully retrieved',
-            payload: {
-                article
-            }
+        handleSuccess(res, 'Article successfully retrieved', {
+            article: article
         });
-    } catch {
-        handleServerError(res, 'Server error');
+    } catch (error) {
+        handleServerError(res, error as Error);
     }
 }
