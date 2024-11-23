@@ -4,6 +4,8 @@ import sequelize from '../config/database';
 class Question extends Model {
   id!: string;
   question!: string;
+  options!: string;
+  sort!: number;
 }
 
 Question.init(
@@ -15,6 +17,14 @@ Question.init(
     },
     question: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    options: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    },
+    sort: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

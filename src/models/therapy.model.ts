@@ -1,12 +1,12 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
-class Teraphy extends Model {
+class Theraphy extends Model {
   id!: string;
   name!: string;
 }
 
-Teraphy.init(
+Theraphy.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -20,9 +20,9 @@ Teraphy.init(
   },
   {
     sequelize,
-    modelName: 'Teraphy',
+    modelName: 'Theraphy',
     tableName: 'teraphies',
   }
 );
 
-export default Teraphy;
+export default Theraphy;

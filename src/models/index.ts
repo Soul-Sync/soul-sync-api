@@ -1,13 +1,12 @@
 import sequelize from '../config/database';
 import Questionnaire from './questionnaire.model';
 import User from './user.model';
-import MusicRecomendation from './music.recomendation.model';
-import TeraphyRecomendation from './therapy.recomendation.model';
-import Teraphy from './therapy.model';
+import MusicRecommendation from './music.recommendation.model';
+import TheraphyRecommendation from './therapy.recommendation.model';
+import Theraphy from './therapy.model';
 import Music from './music.model';
 import DetailQuestionnaire from './detail.questionnaire.model';
-import Question from './question.mode';
-
+import Question from './question.model';
 
 Questionnaire.belongsTo(User, {
   foreignKey: 'user_id',
@@ -19,14 +18,24 @@ Questionnaire.hasMany(DetailQuestionnaire, {
   as: 'detail_questionnaire',
 });
 
-Questionnaire.hasOne(MusicRecomendation, {
+Questionnaire.hasMany(MusicRecommendation, {
   foreignKey: 'questionnaire_id',
-  as: 'music_recomendation',
+  as: 'music_recommendation',
 });
 
-Questionnaire.hasOne(TeraphyRecomendation, {
+Questionnaire.hasMany(TheraphyRecommendation, {
   foreignKey: 'questionnaire_id',
-  as: 'teraphy_recomendation',
+  as: 'theraphy_recommendation',
+});
+
+MusicRecommendation.belongsTo(Music, {
+  foreignKey: 'music_id',
+  as: 'music',
+});
+
+TheraphyRecommendation.belongsTo(Theraphy, {
+  foreignKey: 'therapy_id',
+  as: 'therapy',
 });
 
 Question.hasMany(DetailQuestionnaire, {
@@ -34,14 +43,14 @@ Question.hasMany(DetailQuestionnaire, {
   as: 'detail_questionnaire',
 });
 
-Music.hasMany(MusicRecomendation, {
+Music.hasMany(MusicRecommendation, {
   foreignKey: 'music_id',
-  as: 'music_recomendation',
+  as: 'music_recommendation',
 });
 
-Teraphy.hasMany(TeraphyRecomendation, {
-  foreignKey: 'teraphy_id',
-  as: 'teraphy_recomendation',
+Theraphy.hasMany(TheraphyRecommendation, {
+  foreignKey: 'theraphy_id',
+  as: 'theraphy_recommendation',
 });
 
 export {
@@ -51,7 +60,7 @@ export {
   DetailQuestionnaire,
   Question,
   Music,
-  Teraphy,
-  MusicRecomendation,
-  TeraphyRecomendation,
+  Theraphy,
+  MusicRecommendation,
+  TheraphyRecommendation,
 };

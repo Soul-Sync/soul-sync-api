@@ -1,33 +1,35 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
+import Theraphy from './therapy.model';
 
-class TeraphyRecomendation extends Model {
+class TherapyRecommendation extends Model {
   id!: string;
-  teraphy_id!: string;
-  kuesioner_id!: string;
+  therapy_id!: string;
+  questionnaire_id!: string;
+  therapy!: Theraphy
 }
 
-TeraphyRecomendation.init(
+TherapyRecommendation.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    teraphy_id: {
+    therapy_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    kuesioner_id: {
+    questionnaire_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
   },
   {
     sequelize,
-    modelName: 'TeraphyRecomendation',
-    tableName: 'teraphy_recomendations',
+    modelName: 'TherapyRecommendation',
+    tableName: 'therapy_recommendations',
   }
 );
 
-export default TeraphyRecomendation;
+export default TherapyRecommendation;
