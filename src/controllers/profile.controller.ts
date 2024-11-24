@@ -1,4 +1,4 @@
-import Joi, { string } from 'joi';
+import Joi from 'joi';
 import { Request, Response, RequestHandler } from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model';

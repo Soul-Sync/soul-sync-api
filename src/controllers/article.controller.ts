@@ -1,8 +1,7 @@
 import { Request, Response, RequestHandler } from 'express';
-import { handleResponse, handleServerError, handleSuccess } from '../utils/response.util';
+import {  handleServerError, handleSuccess } from '../utils/response.util';
 import Article from '../models/article.model';
 import { Op, Sequelize } from 'sequelize';
-import { HttpStatusCode } from '../enum/httpStatusCode';
 
 export const index: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const { search } = req.query;

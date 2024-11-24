@@ -1,0 +1,14 @@
+runtime: nodejs20 
+env: standard
+instance_class: f2
+
+entrypoint: npm run start
+
+env_variables:
+  DB_HOST: example
+  DB_USER: db-user
+  DB_PASS: secret
+  DB_NAME: example
+  JWT_SECRET: secret
+  JWT_EXPIRES_IN: 1h
+
