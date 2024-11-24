@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import bodyParser from 'body-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import statusMonitor from 'express-status-monitor';
@@ -16,7 +15,8 @@ import questionnaireRoutes from './routes/questionnaire.route';
 
 // Rate limiter middleware
 import { globalRateLimiter } from './middlewares/rate-limiter.middleware';
-import { authenticate } from './middlewares/auth.middlware';
+import { authenticate } from './middlewares/auth.middleware';
+import errorHandler from './middlewares/error-handler.middleware';
 
 // Swagger Config
 const swaggerOptions = {
@@ -37,6 +37,7 @@ const swaggerOptions = {
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 
 const app = express();
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -46,6 +47,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(globalRateLimiter(15 * 60 * 1000, 100));
+
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
     res.status(200).json({
