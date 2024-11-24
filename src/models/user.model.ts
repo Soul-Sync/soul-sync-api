@@ -8,6 +8,7 @@ class User extends Model {
   public nama?: string;
   public date_of_birth?: Date;
   public gender?: string;
+  public avatar?: string;
 }
 
 
@@ -42,8 +43,12 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
       validate: {
-        isIn: [['male', 'female']],
+        isIn: [['Laki-laki', 'Perempuan']],
       },
+    },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

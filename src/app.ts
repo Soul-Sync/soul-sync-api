@@ -9,6 +9,7 @@ import statusMonitor from 'express-status-monitor';
 import {sequelize} from './models';
 
 import authRoutes from './routes/auth.route';
+import profileRoutes from './routes/profile.route';
 import articleRoutes from './routes/article.route';
 import questionRoutes from './routes/question.route';
 import questionnaireRoutes from './routes/questionnaire.route';
@@ -36,8 +37,8 @@ const swaggerOptions = {
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 
 const app = express();
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Only use status monitor in development
 if (process.env.NODE_ENV === 'development') {
@@ -57,6 +58,7 @@ app.get('/', (req, res) => {
 
 app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerSpecs))
 app.use('/auth', authRoutes);
+app.use('/profile', authenticate, profileRoutes);
 app.use('/article', authenticate, articleRoutes);
 app.use('/question', authenticate, questionRoutes);
 app.use('/questionnaire', authenticate, questionnaireRoutes);
