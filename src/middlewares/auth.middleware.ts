@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import User from "../models/user.model";
 import asyncHandler from "express-async-handler";
-import { handleServerError } from "../utils/response.util";
+import { handleResponse, handleServerError } from "../utils/response.util";
 import { verifyToken } from "../utils/jwt.util";
 import { HttpStatusCode } from "../enum/httpStatusCode";
 
@@ -10,7 +10,25 @@ const authenticate = asyncHandler(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             // Get the token from the Authorization header
-            const token = (req.headers.authorization as string).split(" ")[1];
+            const authHeader = req.headers.authorization;
+
+            if (!authHeader) {
+                handleResponse(res, HttpStatusCode.UNAUTHORIZED, {
+                    status: "error",
+                    message: "Authorization header is missing",
+                });
+                return;
+            }
+
+            const token = authHeader.split(" ")[1];
+
+            if (!token) {
+                handleResponse(res, HttpStatusCode.UNAUTHORIZED, {
+                    status: "error",
+                    message: "Token is missing",
+                });
+                return;
+            }
 
             if (!token) {
                 handleServerError(res, "Unauthorized", HttpStatusCode.UNAUTHORIZED);
