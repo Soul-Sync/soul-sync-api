@@ -67,6 +67,7 @@ app.use('/question', authenticate, questionRoutes);
 app.use('/questionnaire', authenticate, questionnaireRoutes);
 
 const PORT = process.env.PORT || 8000;
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 sequelize.sync().then(() => console.log('Database connected!'));

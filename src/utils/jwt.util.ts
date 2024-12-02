@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h'; // Gunakan string seperti '1h' atau '3600'
 
 interface JwtPayload {
   id: string;
   email: string;
+  exp?: number;
 }
 
 /**
@@ -14,7 +15,10 @@ interface JwtPayload {
  * @returns JWT token
  */
 export const generateToken = (payload: JwtPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  // Cek jika payload.exp ada dan merupakan angka
+  const expiresIn = payload.exp ? payload.exp : JWT_EXPIRES_IN;
+  
+  return jwt.sign(payload, JWT_SECRET, { expiresIn });
 };
 
 /**
