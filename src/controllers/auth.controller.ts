@@ -123,10 +123,13 @@ export const logout: RequestHandler = async (req: Request, res: Response): Promi
         const decoded = verifyToken(token);
 
         if (decoded && decoded.exp) {
-            await TokenBlacklist.create({
-                token,
-                expiredAt: new Date(decoded.exp * 1000),
-            });
+            let blacklistToken = await TokenBlacklist.findOne({ where: { token } });
+            if (!blacklistToken) {
+                await TokenBlacklist.create({
+                    token,
+                    expiredAt: new Date(decoded.exp * 1000),
+                });
+            }
 
             handleSuccess(res, "Logout successful", {
                 status: "success",

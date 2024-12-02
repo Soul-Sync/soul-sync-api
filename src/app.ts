@@ -25,14 +25,32 @@ const swaggerOptions = {
         info: {
             title: 'Soul Sync API',
             version: '1.0.0',
-            description: `SoulSync API Documentation (Bangkit Product Based Capstone Project - C242-PS090) <br><br>To access the endpoints that require authorization, please set up authentication first using bearerAuth with an access token in the form of a JWT obtained from the /auth/login endpoint. <b>This API is used to integrate the Frontend with the MySQL Database</b>. <br><br>SoulSync Object Model is as follows: 
+            description: `SoulSync API Documentation (Bangkit Product Based Capstone Project - C242-PS090)<br><br>
+            To access the endpoints that require authorization, please set up authentication first using bearerAuth with an access token in the form of a JWT obtained from the /auth/login endpoint. <b>This API is used to integrate the Frontend with the MySQL Database</b><br><br>
+            SoulSync Object Model is as follows: 
             <ul> 
                 <li>Users - bla bla bla</li>
             </ul>`,
         },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        // servers : [
+        //     {
+        //         url:'in-progress',
+        //         description:  'SoulSync API'
+        //     },
+        // ],
     },
     apis: ['./src/swagger-doc/*.ts'],
 };
+
 
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 

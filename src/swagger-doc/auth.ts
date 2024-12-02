@@ -18,9 +18,11 @@
  *               email:
  *                 type: string
  *                 format: email
+ *                 example: lusiana@gmail.com
  *               password:
  *                 type: string
  *                 format: password
+ *                 example: lusiana
  *     responses:
  *       '200':
  *         description: Successful login
