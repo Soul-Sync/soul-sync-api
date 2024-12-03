@@ -148,28 +148,14 @@
  *                         updatedAt:
  *                           type: string
  *                           format: date-time
- *       '400':
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                 message:
- *                   type: string
+ *       '401':
+ *          $ref: '#/components/responses/UnauthorizedError'
+ *       '404':
+ *          $ref: '#/components/responses/NotFoundError'
+ *       '429':
+ *          $ref: '#/components/responses/TooManyRequestsError'
  *       '500':
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                 message:
- *                   type: string
+ *          $ref: '#/components/responses/InternalServerError'
  * /auth/logout:
  *   post:
  *     summary: Logout user
@@ -190,25 +176,9 @@
  *                 message:
  *                   type: string
  *       '401':
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                 message:
- *                   type: string
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       '429':
+ *         $ref: '#/components/responses/TooManyRequestsError'
  *       '500':
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                 message:
- *                   type: string
+ *         $ref: '#/components/responses/InternalServerError'
  */

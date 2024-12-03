@@ -37,21 +37,14 @@ export const show: RequestHandler = async (req: Request, res: Response): Promise
 
     try {
         const questionnaire = await fetchQuestionnaireWithRelations(id);
-        if (!questionnaire) {
-            handleResponse(res, HttpStatusCode.NOT_FOUND, {
-                status: 'error',
-                message: 'Questionnaire not found',
-            });
-            return;
-        }
 
         const formattedQuestionnaire = {
-            id: questionnaire.id,
-            user_id: questionnaire.user_id,
-            date: questionnaire.date,
-            status: questionnaire.status,
-            music_recommendation: questionnaire.music_recommendation?.map(({ music }) => music) || [],
-            theraphy_recommendation: questionnaire.theraphy_recommendation?.map(({ therapy }) => therapy) || []
+            id: questionnaire?.id,
+            user_id: questionnaire?.user_id,
+            date: questionnaire?.date,
+            status: questionnaire?.status,
+            music_recommendation: questionnaire?.music_recommendation?.map(({ music }) => music) || [],
+            theraphy_recommendation: questionnaire?.theraphy_recommendation?.map(({ therapy }) => therapy) || []
         };
 
         handleSuccess(res, 'Questionnaire successfully retrieved', {

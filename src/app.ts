@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express from 'express';
+import express, { response } from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import statusMonitor from 'express-status-monitor';
@@ -17,6 +17,7 @@ import questionnaireRoutes from './routes/questionnaire.route';
 import { globalRateLimiter } from './middlewares/rate-limiter.middleware';
 import { authenticate } from './middlewares/auth.middleware';
 import errorHandler from './middlewares/error-handler.middleware';
+import e from 'express';
 
 // Swagger Config
 const swaggerOptions = {
@@ -40,13 +41,110 @@ const swaggerOptions = {
                     bearerFormat: 'JWT',
                 },
             },
+            responses: {
+                UnauthorizedError: {    
+                    description: 'Unauthorized',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    status: {
+                                        type: 'string',
+                                        example: 'error'
+                                    },
+                                    message: {
+                                        type: 'error',
+                                        example: 'Authorization header is missing'
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                BadRequestError: {
+                    description: 'Bad Request',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    status: {
+                                        type: 'string',
+                                        example: 'error'
+                                    },
+                                    message: {
+                                        type: 'string',
+                                        example: "\"email\" is required"
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                InternalServerError: {
+                    description: 'Internal Server Error',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    status: {
+                                        type: 'string',
+                                        example: 'error'
+                                    },
+                                    message: {
+                                        type: 'string',
+                                        example: 'Internal server error'
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                NotFoundError: {
+                    description: 'Not Found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    status: {
+                                        type: 'string',
+                                        example: 'error'
+                                    },
+                                    message: {
+                                        type: 'string',
+                                        example: 'Resource not found'
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                TooManyRequestsError: {
+                    description: 'Too Many Requests',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    status: {
+                                        type: 'string',
+                                        example: 'error'
+                                    },
+                                    message: {
+                                        type: 'string',
+                                        example: 'Too many requests, please try again later after 15 minutes'
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
-        // servers : [
-        //     {
-        //         url:'in-progress',
-        //         description:  'SoulSync API'
-        //     },
-        // ],
+        
     },
     apis: ['./src/swagger-doc/*.ts'],
 };

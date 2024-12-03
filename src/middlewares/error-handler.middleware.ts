@@ -5,7 +5,7 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
   logger.error(`Error Message: ${err.message}, Stack: ${err.stack}`);
 
   res.status(500).json({
-    status: false,
+    status: 'error',
     message: 'Internal Server Error',
   });
 };
