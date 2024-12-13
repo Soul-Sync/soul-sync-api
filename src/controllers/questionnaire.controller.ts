@@ -1,15 +1,19 @@
 import { Request, Response, RequestHandler } from 'express';
 import { handleResponse, handleServerError, handleSuccess } from '../utils/response.util';
-import { DetailQuestionnaire, Music, MusicRecommendation, Questionnaire, Theraphy, TheraphyRecommendation, sequelize } from '../models';
+import { Music, MusicRecommendation, Questionnaire, Theraphy, TheraphyRecommendation, sequelize } from '../models';
 import { Op, Sequelize } from 'sequelize';
 import { fetchQuestionnaireWithRelations } from '../utils/questionnaire.util';
 import { HttpStatusCode } from '../enum/httpStatusCode';
+import axios from 'axios';
 
 export const index: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     try {
         const { date } = req.query;
         const user_id = req.user?.id;
         const questionnaire = await Questionnaire.findAll({
+            attributes: {
+                exclude: ['answer']
+            },
             where: date
                 ? {
                     createdAt: {
@@ -82,35 +86,22 @@ export const store: RequestHandler = async (req, res) => {
             return;
         }
 
+        // Call Endpoint Model Prediction
+        const prediction = await axios.post(
+            "https://soulsync-model-endpoint-451042832834.asia-southeast2.run.app/predict",
+            answer
+        );
+
         // Store the questionnaire
         const questionnaire = await Questionnaire.create(
             {
                 user_id,
                 date: new Date(),
-                status: ['Happy', 'Sad', 'Stress'][Math.floor(Math.random() * 3)]
+                status: prediction.data.result,
+                answer: answer
             },
             { transaction }
         );
-
-        // Store the answers
-        if (answer.length > 0) {
-            for (const a of answer) {
-                await DetailQuestionnaire.create(
-                    {
-                        questionnaire_id: questionnaire.id,
-                        question_id: a.id,
-                        answer: a.option
-                    },
-                    { transaction }
-                );
-            }
-        } else {
-            handleResponse(res, HttpStatusCode.BAD_REQUEST, {
-                status: 'error',
-                message: 'Please answer all question',
-            });
-            return;
-        }
 
         // Store the Music Recommendation & Theraphy Recommendation
         const music_recommendation = await Music.findAll({
@@ -145,8 +136,17 @@ export const store: RequestHandler = async (req, res) => {
 
         const questionnaireData = await fetchQuestionnaireWithRelations(questionnaire.id);
 
+        const formattedQuestionnaire = {
+            id: questionnaireData?.id,
+            user_id: questionnaireData?.user_id,
+            date: questionnaireData?.date,
+            status: questionnaireData?.status,
+            music_recommendation: questionnaireData?.music_recommendation?.map(({ music }) => music) || [],
+            theraphy_recommendation: questionnaireData?.theraphy_recommendation?.map(({ therapy }) => therapy) || []
+        }
+
         handleSuccess(res, 'Questionnaire successfully created', {
-            questionnaire: questionnaireData
+            questionnaire: formattedQuestionnaire
         }, HttpStatusCode.CREATED);
 
     } catch (error) {

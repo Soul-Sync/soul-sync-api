@@ -6,6 +6,7 @@ class Question extends Model {
   question!: string;
   options!: string;
   sort!: number;
+  keyword!: string;
 }
 
 Question.init(
@@ -25,6 +26,10 @@ Question.init(
     },
     sort: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    keyword: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

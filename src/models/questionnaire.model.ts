@@ -8,6 +8,7 @@ class Questionnaire extends Model {
   user_id!: string;
   date!: Date;
   status!: string;
+  answer!: string;
   music_recommendation!: MusicRecommendation[];
   theraphy_recommendation!: TheraphyRecomendation[];
 }
@@ -21,6 +22,10 @@ Questionnaire.init(
     },
     user_id: {
       type: DataTypes.UUID,
+      allowNull: false,
+    },
+    answer: {
+      type: DataTypes.JSON,
       allowNull: false,
     },
     date: {

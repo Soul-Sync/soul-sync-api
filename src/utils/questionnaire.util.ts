@@ -3,6 +3,7 @@ import { Questionnaire, MusicRecommendation, Music, TheraphyRecommendation, Ther
 export const fetchQuestionnaireWithRelations = async (id: string) => {
     return await Questionnaire.findOne({
         where: { id },
+        attributes: { exclude: ['answer'] },
         include: [
             {
                 model: MusicRecommendation,

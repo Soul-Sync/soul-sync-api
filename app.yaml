@@ -5,10 +5,9 @@ instance_class: f2
 entrypoint: npm run start
 
 env_variables:
-  DB_HOST: example
-  DB_USER: db-user
-  DB_PASS: secret
-  DB_NAME: example
-  JWT_SECRET: secret
-  JWT_EXPIRES_IN: 1h
-
+  DB_HOST: YOUR_DATABASE_HOST
+  DB_USER: YOUR_DATABASE_USERNAME
+  DB_PASS: YOUR_DATABASE_PASSWORD
+  DB_NAME: YOUR_DATABASE_NAME
+  JWT_SECRET: edad91d0bb6aea2221aec63a5ea482461a02565a13e781b9518aa8467a62da0adaf2a69d8d40eba355f6a18a38873b1447a5fc9dfc8f08d7062856a97dbe85e1
+  JWT_EXPIRES_IN: 1d

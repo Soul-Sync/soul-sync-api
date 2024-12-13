@@ -18,11 +18,11 @@
  *               email:
  *                 type: string
  *                 format: email
- *                 example: lusiana@gmail.com
+ *                 example: testing@gmail.com
  *               password:
  *                 type: string
  *                 format: password
- *                 example: lusiana
+ *                 example: testing
  *     responses:
  *       '200':
  *         description: Successful login

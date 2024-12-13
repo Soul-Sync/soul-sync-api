@@ -17,7 +17,6 @@ import questionnaireRoutes from './routes/questionnaire.route';
 import { globalRateLimiter } from './middlewares/rate-limiter.middleware';
 import { authenticate } from './middlewares/auth.middleware';
 import errorHandler from './middlewares/error-handler.middleware';
-import e from 'express';
 
 // Swagger Config
 const swaggerOptions = {
@@ -30,9 +29,22 @@ const swaggerOptions = {
             To access the endpoints that require authorization, please set up authentication first using bearerAuth with an access token in the form of a JWT obtained from the /auth/login endpoint. <b>This API is used to integrate the Frontend with the MySQL Database</b><br><br>
             SoulSync Object Model is as follows: 
             <ul> 
-                <li>Users - bla bla bla</li>
+                <li>Users</li>
+                <li>Articles</li>
+                <li>Questions</li>
+                <li>Questionnaires</li>
             </ul>`,
         },
+        servers : [
+            {
+                url:'https://bangkit-442612.et.r.appspot.com/',
+                description:  'SoulSync Main API'
+            },
+            {
+                url: 'https://soulsync-model-endpoint-451042832834.asia-southeast2.run.app/',
+                description:  'Machine Learning Model API'
+            }
+        ],
         components: {
             securitySchemes: {
                 bearerAuth: {
@@ -144,7 +156,6 @@ const swaggerOptions = {
                 },
             },
         },
-        
     },
     apis: ['./src/swagger-doc/*.ts'],
 };
@@ -153,6 +164,7 @@ const swaggerOptions = {
 const swaggerSpecs = swaggerJSDoc(swaggerOptions);
 
 const app = express();
+app.set('trust proxy', true);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -170,7 +182,7 @@ app.get('/', (req, res) => {
     res.status(200).json({
         title: 'Soul Sync API',
         version: '1.0.0',
-        description: 'A simple CRUD API',
+        description: 'SoulSync API Documentation (Bangkit Product Based Capstone Project - C242-PS090)',
         apiDoc: '/api-doc'
     });
 });
